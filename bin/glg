@@ -1,0 +1,2 @@
+#!/bin/sh
+git log --stat --pretty=format:'%Cblue%h %Cgreen%ar %Cred%an %Creset%s %Cred%d' | head
