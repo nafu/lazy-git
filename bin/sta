@@ -1,8 +1,8 @@
 #!/bin/sh
 if [ $# -eq 1 ]; then
-    git add `git status -s -b | grep -v "^#" | awk '{print$1="";print}' | grep -v "^$" | awk "NR==$1"`
+  git add `git status -s -b | grep -v "^#" | awk '{print$1="";print}' | grep -v "^$" | awk "NR==$1"`
 elif [ $# -eq 2 ]; then
-    git add $1 `git status -s -b | grep -v "^#" | awk '{print$1="";print}' | grep -v "^$" | awk "NR==$2"`
+  git add $1 `git status -s -b | grep -v "^#" | awk '{print$1="";print}' | grep -v "^$" | awk "NR==$2"`
 else
-    exit 1
+  exit 1
 fi
