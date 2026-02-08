@@ -1,0 +1,64 @@
+#!/bin/sh
+if [ $# -eq 0 ]; then
+  if git rev-parse --verify staging >/dev/null 2>&1; then
+    base="staging"
+  elif git rev-parse --verify main >/dev/null 2>&1; then
+    base="main"
+  else
+    base="master"
+  fi
+else
+  base="$1"
+fi
+
+range="$base..HEAD"
+commits=$(git log --format='%H %G?' --reverse "$range" | grep ' N$' | cut -d' ' -f1)
+
+if [ -z "$commits" ]; then
+  echo "No unsigned commits in $range"
+  exit 0
+fi
+
+total=$(echo "$commits" | wc -l | tr -d ' ')
+sign_shas=""
+count=0
+sign_count=0
+
+for sha in $commits; do
+  count=$((count + 1))
+  echo ""
+  echo "=== [$count/$total] $(git log -1 --format='%h %s' "$sha") ==="
+  git -c color.ui=always show "$sha" | less -FRX
+  printf "Sign this commit? [y/n/q] "
+  read -r ans < /dev/tty
+  case $ans in
+    y|Y)
+      sign_count=$((sign_count + 1))
+      sign_shas="$sign_shas $sha"
+      ;;
+    q|Q) break ;;
+  esac
+done
+
+if [ "$sign_count" -eq 0 ]; then
+  echo "No commits selected."
+  exit 0
+fi
+
+echo ""
+echo "$sign_count commit(s) will be signed. Proceed? [y/n]"
+read -r confirm < /dev/tty
+if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+  echo "Aborted."
+  exit 0
+fi
+
+sed_script=$(mktemp)
+for sha in $sign_shas; do
+  short=$(git rev-parse --short "$sha")
+  printf '/^pick %s/a\\\nexec git commit --amend --no-edit -S\n' "$short" >> "$sed_script"
+done
+
+GIT_SEQUENCE_EDITOR="sed -i '' -f '$sed_script'" git rebase -i "$base"
+rm "$sed_script"
+echo "Done. Run lgu to verify."

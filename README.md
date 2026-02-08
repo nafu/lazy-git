@@ -103,10 +103,39 @@ Add this line to .bashrc, .zshrc or something
 ### lg, lgg, lgr
 
 	// git log --stat --pretty=format:'%Cblue%h %Cgreen%ar %Cred%an %Creset%s %Cred%d' | head
+	// Includes GPG signature status: G (signed) or N (unsigned)
 	lg
 
 	// git log --stat --pretty=format:'%Cblue%h %Cgreen%ar %Cred%an %Creset%s %Cred%d'
+	// Includes GPG signature status: G (signed) or N (unsigned)
 	lgg
 
 	// git log --graph --date-order --pretty=format:'%Cblue%h %Cgreen%ci %Cred%an %Cblue%m %Creset%s %Cred%d'
+	// Includes GPG signature status: G (signed) or N (unsigned)
 	lgr
+
+### lga, lgap
+
+	// Show only GPG-signed commits (defaults to staging/main/master..HEAD)
+	lga
+	lga <commit-range>
+
+	// Show GPG-signed commits with patches
+	lgap
+	lgap <commit-range>
+
+### lgu, lgup
+
+	// Show only unsigned commits (defaults to staging/main/master..HEAD)
+	lgu
+	lgu <commit-range>
+
+	// Show unsigned commits with patches
+	lgup
+	lgup <commit-range>
+
+### lgsign
+
+	// Interactively review and GPG-sign unsigned commits using rebase
+	lgsign
+	lgsign <base-branch>
