@@ -55,12 +55,7 @@ if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
   exit 0
 fi
 
-git rebase --exec "
-  id=\$(git log -1 --format='%at %s')
-  if grep -qF \"\$id\" '$sign_ids'; then
-    git commit --amend --no-edit -S
-  fi
-" "$base"
+git rebase --exec "id=\$(git log -1 --format='%at %s'); if grep -qF \"\$id\" '$sign_ids'; then git commit --amend --no-edit -S; fi" "$base"
 
 rm "$sign_ids"
 echo "Done. Run lgu to verify."
