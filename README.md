@@ -1,30 +1,30 @@
-#lazy-git
+# lazy-git
 
-##Overview
+## Overview
 
 lazy-git is commands to use git lazily.
 
-##Instration
+## Installation
 
 1. Download lazy-git
 2. Put it in ~/usr/local/lazy-git
 3. Add the Directory to the Path
 
-###1.Download lazy-git
+### 1. Download lazy-git
 
 Download as a zip, or git
 
-###2.Put it in ~/usr/local/lazy-git
+### 2. Put it in ~/usr/local/lazy-git
 
 	cp -r ~/Downloads/lazy-git ~/usr/local/
 
-###3.Add the Directory to the Path
+### 3. Add the Directory to the Path
 
 Add this line to .bashrc, .zshrc or something
 
 	export PATH=~/usr/local/lazy-git/bin:$PATH
 
-##Usage
+## Usage
 
 ### st, sta, stco, std, stv
 
