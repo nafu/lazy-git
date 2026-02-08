@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ $# -eq 0 ]; then
+  if git rev-parse --verify staging >/dev/null 2>&1; then
+    base="staging"
+  elif git rev-parse --verify main >/dev/null 2>&1; then
+    base="main"
+  else
+    base="master"
+  fi
+  set -- "$base..HEAD"
+fi
+commits=$(git log --format='%H %G?' "$@" | grep ' G$' | cut -d' ' -f1)
+if [ -n "$commits" ]; then
+  git -c color.ui=always log -p --no-walk=sorted $commits | less -FRX
+fi

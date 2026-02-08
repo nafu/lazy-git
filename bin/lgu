@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ $# -eq 0 ]; then
+  if git rev-parse --verify staging >/dev/null 2>&1; then
+    base="staging"
+  elif git rev-parse --verify main >/dev/null 2>&1; then
+    base="main"
+  else
+    base="master"
+  fi
+  set -- "$base..HEAD"
+fi
+git -c color.ui=always log --format='%Cblue%h %G? %Cgreen%ar %Cred%an %Creset%s %Cred%d' "$@" | grep ' N ' | sed $'s/ N / \033[31mN\033[0m /' | less -FRX

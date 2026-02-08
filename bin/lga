@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ $# -eq 0 ]; then
+  if git rev-parse --verify staging >/dev/null 2>&1; then
+    base="staging"
+  elif git rev-parse --verify main >/dev/null 2>&1; then
+    base="main"
+  else
+    base="master"
+  fi
+  set -- "$base..HEAD"
+fi
+git -c color.ui=always log --format='%Cblue%h %G? %Cgreen%ar %Cred%an %Creset%s %Cred%d' "$@" | grep ' G ' | sed $'s/ G / \033[32mG\033[0m /' | less -FRX
