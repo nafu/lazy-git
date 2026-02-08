@@ -20,7 +20,7 @@ if [ -z "$commits" ]; then
 fi
 
 total=$(echo "$commits" | wc -l | tr -d ' ')
-sign_ids=$(mktemp)
+sign_shas=""
 count=0
 sign_count=0
 
@@ -34,7 +34,7 @@ for sha in $commits; do
   case $ans in
     y|Y)
       sign_count=$((sign_count + 1))
-      git log -1 --format='%at %s' "$sha" >> "$sign_ids"
+      sign_shas="$sign_shas $sha"
       ;;
     q|Q) break ;;
   esac
@@ -42,7 +42,6 @@ done
 
 if [ "$sign_count" -eq 0 ]; then
   echo "No commits selected."
-  rm "$sign_ids"
   exit 0
 fi
 
@@ -51,11 +50,15 @@ echo "$sign_count commit(s) will be signed. Proceed? [y/n]"
 read -r confirm < /dev/tty
 if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
   echo "Aborted."
-  rm "$sign_ids"
   exit 0
 fi
 
-git rebase --exec "id=\$(git log -1 --format='%at %s'); if grep -qF \"\$id\" '$sign_ids'; then git commit --amend --no-edit -S; fi" "$base"
+sed_script=$(mktemp)
+for sha in $sign_shas; do
+  short=$(git rev-parse --short "$sha")
+  printf '/^pick %s/a\\\nexec git commit --amend --no-edit -S\n' "$short" >> "$sed_script"
+done
 
-rm "$sign_ids"
+GIT_SEQUENCE_EDITOR="sed -i '' -f '$sed_script'" git rebase -i "$base"
+rm "$sed_script"
 echo "Done. Run lgu to verify."
