@@ -1,2 +1,2 @@
 #!/bin/sh
-git log --stat --pretty=format:'%Cblue%h %Cgreen%ar %Cred%an %Creset%s %Cred%d'
+git -c color.ui=always log --stat --pretty=format:'%Cblue%h %G? %Cgreen%ar %Cred%an %Creset%s %Cred%d' | sed -e $'s/ G / \033[32mG\033[0m /' -e $'s/ N / \033[31mN\033[0m /' | less -FRX
